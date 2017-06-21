@@ -6,13 +6,14 @@
 class parallel_matrix_multiplier_test : public matrix_multiplier_test {
 
 public:
-    parallel_matrix_multiplier_test(unsigned int n) : matrix_multiplier_test(n) {
+    parallel_matrix_multiplier_test(unsigned int n) : matrix_multiplier_test(n, false) {
 
     }
 
     void multiply() {
         #pragma omp parallel for
         for (int i = 0; i < n; ++i) {
+            #pragma omp parallel for
             for (int j = 0; j < n; ++j) {
                 C[i * n + j] = 0;
                 for (int k = 0; k < n; ++k) {

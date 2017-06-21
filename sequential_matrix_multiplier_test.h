@@ -11,7 +11,7 @@ using namespace std;
 
 class sequential_matrix_multiplier_test : public matrix_multiplier_test {
 public:
-    sequential_matrix_multiplier_test(unsigned int n) : matrix_multiplier_test(n) {
+    sequential_matrix_multiplier_test(unsigned int n) : matrix_multiplier_test(n, false) {
     }
 
     void multiply() {

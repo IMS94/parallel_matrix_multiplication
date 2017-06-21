@@ -7,48 +7,90 @@
 #include <iostream>
 #include "sequential_matrix_multiplier_test.h"
 #include "parallel_matrix_multiplier_test.h"
+#include "optimized_parallel_matrix_multiplier_test.h"
 
 using namespace std;
 
-void calc_mean_and_stdv(vector<double> times);
+int calc_mean_and_stdv(vector<double> times);
+
+double mean(vector<double> times);
 
 int main() {
+    vector<int> sample_sizes_serial;
+    vector<int> sample_sizes_parallel;
+    vector<int> sample_sizes_optimized;
 
-    for (int i = N_START; i <= N_STOP; i += STEP) {
-        cout << "\n\nN = " << i << "\n" << endl;
+    for (unsigned int i = N_START; i <= N_STOP; i += STEP) {
+        cout << "================ N = " << i << " ==========" << endl;
         vector<double> serial_times;
         vector<double> parallel_times;
+        vector<double> optimized_times;
 
-        for (int j = 0; j < ITERATIONS; ++j) {
-            cout << "\nRunning the sequential test\n" << endl;
+        for (unsigned int j = 0; j < ITERATIONS; ++j) {
             sequential_matrix_multiplier_test serial_test = sequential_matrix_multiplier_test(i);
             serial_test.run_test();
-            serial_test.print_result(false);
             serial_times.push_back(serial_test.getElapsed_time());
+//            serial_test.print_result(true);
 
-            cout << "\nRunning the parallel test" << endl;
             parallel_matrix_multiplier_test parallel_test = parallel_matrix_multiplier_test(i);
             parallel_test.run_test();
-            parallel_test.print_result(false);
             parallel_times.push_back(parallel_test.getElapsed_time());
+//            parallel_test.print_result(true);
+
+            optimized_parallel_matrix_multiplier_test optimized_test = optimized_parallel_matrix_multiplier_test(i);
+            optimized_test.run_test();
+            optimized_times.push_back(optimized_test.getElapsed_time());
+//            optimized_test.print_result(true);
         }
-        cout << "\nMean and Standard Deviation\n" << endl;
-        calc_mean_and_stdv(serial_times);
-        calc_mean_and_stdv(parallel_times);
-        break;
+
+        cout << "\t Serial Test" << endl;
+        int serial_n = calc_mean_and_stdv(serial_times);
+
+        cout << "\t Parallel Test" << endl;
+        int parallel_n = calc_mean_and_stdv(parallel_times);
+        cout << "\t\tSpeedup \t: " << mean(serial_times) / mean(parallel_times) << "\n" << endl;
+
+        cout << "\t Optimized Parallel Test" << endl;
+        int optimized_n = calc_mean_and_stdv(optimized_times);
+        cout << "\t\tSpeedup \t: " << mean(serial_times) / mean(optimized_times) << "\n" << endl;
+
+        sample_sizes_serial.push_back(serial_n);
+        sample_sizes_parallel.push_back(parallel_n);
+        sample_sizes_optimized.push_back(optimized_n);
+    }
+
+    for (int a:sample_sizes_serial) {
+        cout << a << " ";
+    }
+    cout << endl;
+    for (int a:sample_sizes_parallel) {
+        cout << a << " ";
+    }
+    cout << endl;
+    for (int a:sample_sizes_optimized) {
+        cout << a << " ";
     }
 
     return 0;
 }
 
-void calc_mean_and_stdv(vector<double> times) {
+int calc_mean_and_stdv(vector<double> times) {
     double sum = std::accumulate(times.begin(), times.end(), 0.0);
     double mean = sum / times.size();
 
     double sq_sum = std::inner_product(times.begin(), times.end(), times.begin(), 0.0);
     double stdev = std::sqrt(sq_sum / times.size() - mean * mean);
     double n = std::pow(((100 * 1.96 * stdev) / (5 * mean)), 2);
-    cout << "Mean\t: " << mean * 1000 << endl;
-    cout << "std\t: " << stdev * 1000 << endl;
-    cout << "n\t: " << n << endl;
+
+    cout << "\t-------------------------------------" << endl;
+    cout << "\tMean\t: " << mean << endl;
+    cout << "\tstd\t\t: " << stdev << endl;
+    cout << "\tn\t\t: " << n << endl;
+    cout << "\t-------------------------------------" << endl;
+
+    return (int) n;
+}
+
+double mean(vector<double> times) {
+    return std::accumulate(times.begin(), times.end(), 0.0) / times.size();
 }
