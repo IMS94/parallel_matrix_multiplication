@@ -2,7 +2,7 @@
 #define STEP 200
 #define N_START 200
 #define N_STOP 2000
-#define ITERATIONS 10
+#define ITERATIONS 20
 
 #include <iostream>
 #include "sequential_matrix_multiplier_test.h"
@@ -15,7 +15,12 @@ int calc_mean_and_stdv(vector<double> times);
 
 double mean(vector<double> times);
 
-int main() {
+int main(int argc, char *argv[]) {
+    if (argc < 3) {
+        cout << "At least two arguments are required. \n\t./{executable} [iterations] [S|P|OP]" << endl;
+        exit(1);
+    }
+
     vector<int> sample_sizes_serial;
     vector<int> sample_sizes_parallel;
     vector<int> sample_sizes_optimized;
@@ -26,37 +31,52 @@ int main() {
         vector<double> parallel_times;
         vector<double> optimized_times;
 
-        for (unsigned int j = 0; j < ITERATIONS; ++j) {
-            sequential_matrix_multiplier_test serial_test = sequential_matrix_multiplier_test(i);
-            serial_test.run_test();
-            serial_times.push_back(serial_test.getElapsed_time());
-//            serial_test.print_result(true);
+        for (int k = 2; k < argc; ++k) {
+            string arg = argv[k];
+            for (unsigned int j = 0; j < ITERATIONS; ++j) {
+                if (arg == "S") {
+                    sequential_matrix_multiplier_test serial_test = sequential_matrix_multiplier_test(i);
+                    serial_test.run_test();
+                    serial_times.push_back(serial_test.getElapsed_time());
+                }
 
-            parallel_matrix_multiplier_test parallel_test = parallel_matrix_multiplier_test(i);
-            parallel_test.run_test();
-            parallel_times.push_back(parallel_test.getElapsed_time());
-//            parallel_test.print_result(true);
+                if (arg == "P") {
+                    parallel_matrix_multiplier_test parallel_test = parallel_matrix_multiplier_test(i);
+                    parallel_test.run_test();
+                    parallel_times.push_back(parallel_test.getElapsed_time());
+                }
 
-            optimized_parallel_matrix_multiplier_test optimized_test = optimized_parallel_matrix_multiplier_test(i);
-            optimized_test.run_test();
-            optimized_times.push_back(optimized_test.getElapsed_time());
-//            optimized_test.print_result(true);
+                if (arg == "OP") {
+                    optimized_parallel_matrix_multiplier_test optimized_test =
+                            optimized_parallel_matrix_multiplier_test(i);
+                    optimized_test.run_test();
+                    optimized_times.push_back(optimized_test.getElapsed_time());
+                }
+            }
         }
 
-        cout << "\t Serial Test" << endl;
-        int serial_n = calc_mean_and_stdv(serial_times);
+        for (int k = 2; k < argc; ++k) {
+            string arg = argv[k];
+            if (arg == "S") {
+                cout << "\t Serial Test" << endl;
+                int serial_n = calc_mean_and_stdv(serial_times);
+                sample_sizes_serial.push_back(serial_n);
+            }
 
-        cout << "\t Parallel Test" << endl;
-        int parallel_n = calc_mean_and_stdv(parallel_times);
-        cout << "\t\tSpeedup \t: " << mean(serial_times) / mean(parallel_times) << "\n" << endl;
+            if (arg == "P") {
+                cout << "\t Parallel Test" << endl;
+                int parallel_n = calc_mean_and_stdv(parallel_times);
+                cout << "\t\tSpeedup \t: " << mean(serial_times) / mean(parallel_times) << "\n" << endl;
+                sample_sizes_parallel.push_back(parallel_n);
+            }
 
-        cout << "\t Optimized Parallel Test" << endl;
-        int optimized_n = calc_mean_and_stdv(optimized_times);
-        cout << "\t\tSpeedup \t: " << mean(serial_times) / mean(optimized_times) << "\n" << endl;
-
-        sample_sizes_serial.push_back(serial_n);
-        sample_sizes_parallel.push_back(parallel_n);
-        sample_sizes_optimized.push_back(optimized_n);
+            if (arg == "OP") {
+                cout << "\t Optimized Parallel Test" << endl;
+                int optimized_n = calc_mean_and_stdv(optimized_times);
+                cout << "\t\tSpeedup \t: " << mean(serial_times) / mean(optimized_times) << "\n" << endl;
+                sample_sizes_optimized.push_back(optimized_n);
+            }
+        }
     }
 
     for (int a:sample_sizes_serial) {
@@ -71,6 +91,7 @@ int main() {
         cout << a << " ";
     }
 
+    cout << endl;
     return 0;
 }
 
