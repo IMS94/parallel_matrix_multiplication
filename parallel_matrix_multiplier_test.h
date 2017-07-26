@@ -6,7 +6,7 @@
 class parallel_matrix_multiplier_test : public matrix_multiplier_test {
 
 public:
-    explicit parallel_matrix_multiplier_test(unsigned int n) : matrix_multiplier_test(n, false) {
+    explicit parallel_matrix_multiplier_test(unsigned int n) : matrix_multiplier_test(n) {
     }
 
     void multiply() {

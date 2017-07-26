@@ -11,10 +11,10 @@ class matrix_multiplier_test {
 private:
     double elapsed_time = 0;
 
-    void print_matrix(double *matrix, bool transposed) {
+    void print_matrix(double *matrix) {
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < n; ++j) {
-                cout << matrix[transposed ? j * n + i : i * n + j] << "\t";
+                cout << matrix[i * n + j] << "\t";
             }
             cout << endl;
         }
@@ -31,32 +31,22 @@ private:
             }
         }
 
-        if (optimized) {
-            for (int i = 0; i < n; ++i) {
-                for (int j = 0; j < n; ++j) {
-                    B[j * n + i] = distribution(generator);
-                }
-            }
-        } else {
-            for (int i = 0; i < n; ++i) {
-                for (int j = 0; j < n; ++j) {
-                    B[i * n + j] = distribution(generator);
-                }
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                B[i * n + j] = distribution(generator);
             }
         }
     }
 
 protected:
     unsigned int n;
-    bool optimized = false;
     double *A;
     double *B;
     double *C;
 
 public:
-    matrix_multiplier_test(unsigned int n, bool optimized) {
+    matrix_multiplier_test(unsigned int n) {
         this->n = n;
-        this->optimized = optimized;
 
         A = new double[n * n];
         B = new double[n * n];
@@ -85,11 +75,11 @@ public:
     void print_result(bool print_matrices) {
         if (print_matrices) {
             cout << "\n\nMatrix A:" << endl;
-            print_matrix(A, false);
+            print_matrix(A);
             cout << "\n\nMatrix B:" << endl;
-            print_matrix(B, optimized);
+            print_matrix(B);
             cout << "\n\nMatrix C (=A x B) :" << endl;
-            print_matrix(C, false);
+            print_matrix(C);
             cout << endl;
         }
 

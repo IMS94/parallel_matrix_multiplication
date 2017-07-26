@@ -10,7 +10,7 @@ using namespace std;
 
 class sequential_matrix_multiplier_test : public matrix_multiplier_test {
 public:
-    explicit sequential_matrix_multiplier_test(unsigned int n) : matrix_multiplier_test(n, false) {
+    explicit sequential_matrix_multiplier_test(unsigned int n) : matrix_multiplier_test(n) {
     }
 
     void multiply() override {
