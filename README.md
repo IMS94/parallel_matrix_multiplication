@@ -4,8 +4,8 @@
 
 1. Ubuntu 16.04 Operating System is preferred because it contains all the
 required tools pre-installed.
-2. CMake 3.5 or above
-3. GNU gcc (5.4.0 - comes with Ubuntu)
+2. CMake 3.5 or above (Install with `sudo apt install cmake`)
+3. GNU gcc (5.4.0 - comes with Ubuntu. To install `sudo apt install gcc`)
 
 ## CLI
 For both sequential vs parallel and optimized scenarios, same code is
