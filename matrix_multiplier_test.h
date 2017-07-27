@@ -7,6 +7,10 @@
 
 using namespace std;
 
+/**
+ * This is the main class of the matrix multiplication tests. This class generates a n*n matrix once 'n' is given with
+ * random values as elements.
+ */
 class matrix_multiplier_test {
 private:
     double elapsed_time = 0;
@@ -20,6 +24,9 @@ private:
         }
     }
 
+    /**
+     * Populates matrices A and B with random values.
+     */
     void populate_matrix() {
         random_device rand_device;
         mt19937 generator(rand_device());
@@ -61,15 +68,24 @@ public:
         delete[] C;
     }
 
+    /**
+     * This is the method to be called to run the test. This will call method multiply() of subclasses and measure the
+     * time for multiply method to complete.
+     */
     void run_test() {
         struct timeval start, end;
         gettimeofday(&start, NULL);
+        // Time to complete following method is measured
         multiply();
         gettimeofday(&end, NULL);
         double delta = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
         elapsed_time = delta;
     }
 
+    /**
+     * Sub classes should implement this method with the corresponding matrix multiplication technique. Time taken to
+     * complete this method is taken as the time for matrix multiplication.
+     */
     virtual void multiply()= 0;
 
     void print_result(bool print_matrices) {

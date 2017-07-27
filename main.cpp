@@ -15,6 +15,17 @@ int calc_mean_and_stdv(vector<double> times);
 
 double mean(vector<double> times);
 
+/**
+ * This is the main method of the program. This takes at least 2 command line arguments. 1st argument is the sample size
+ * of to be used for each test. 2nd argument is the type of test/tests that you want to run.
+ *
+ * ex: ./multiplier 10 S P
+ *                  This will run the sequential version and the non-optimized parallel version each with sample sizes 10.
+ *
+ * @param argc argument count
+ * @param argv arguments
+ * @return 0
+ */
 int main(int argc, char *argv[]) {
     if (argc < 3) {
         cout << "At least two arguments are required. \n\t./{executable} [iterations] [S|P|OP]" << endl;
@@ -33,19 +44,24 @@ int main(int argc, char *argv[]) {
 
         for (int k = 2; k < argc; ++k) {
             string arg = argv[k];
+            // Running tests for each argument type given by the user
             for (unsigned int j = 0; j < ITERATIONS; ++j) {
+
+                // Run the sequential test
                 if (arg == "S") {
                     sequential_matrix_multiplier_test serial_test = sequential_matrix_multiplier_test(i);
                     serial_test.run_test();
                     serial_times.push_back(serial_test.getElapsed_time());
                 }
 
+                // Run the non-optimized parallel version
                 if (arg == "P") {
                     parallel_matrix_multiplier_test parallel_test = parallel_matrix_multiplier_test(i);
                     parallel_test.run_test();
                     parallel_times.push_back(parallel_test.getElapsed_time());
                 }
 
+                // Run the optimized parallel version
                 if (arg == "OP") {
                     optimized_parallel_matrix_multiplier_test optimized_test =
                             optimized_parallel_matrix_multiplier_test(i);
